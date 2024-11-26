@@ -16,6 +16,8 @@
         <button type="submit">Login</button>
     </form>
     <?php
+    // include "db_connect.php";
+
     session_start();
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $username = $_POST['username'];
