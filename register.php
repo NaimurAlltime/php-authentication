@@ -1,3 +1,35 @@
+<?php
+include "db_connect.php"; // Include the database connection file
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $username = $_POST['username'];
+    $email = $_POST['email'];
+    $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
+
+    // Prepare the SQL statement
+    $stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
+    $stmt->bind_param("sss", $username, $email, $password);
+
+    // Execute the query and provide feedback
+    if ($stmt->execute()) {
+        echo "<script>
+            alert('Registration successful.');
+            window.location.href = 'login.php'; // Redirect to login page
+        </script>";
+    } else {
+        echo "<script>
+            alert('Error: " . $stmt->error . "');
+        </script>";
+    }
+
+    // Close the statement and database connection
+    $stmt->close();
+    $conn->close();
+}
+?>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,28 +53,5 @@
         <br>
         <button type="submit">Register</button>
     </form>
-
-    <?php
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = $_POST['username'];
-    $email = $_POST['email'];
-    $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
-
-    $conn = new mysqli("localhost", "root", "", "user_auth");
-    if ($conn->connect_error) die("Connection failed: " . $conn->connect_error);
-
-    $stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
-    $stmt->bind_param("sss", $username, $email, $password);
-
-    if ($stmt->execute()) {
-        echo "<script>alert('Registration successful.');</script>";
-    } else {
-        echo "<script>alert('Error: " . $stmt->error . "');</script>";
-    }
-
-    $stmt->close();
-    $conn->close();
-}
-?>
 </body>
 </html>
