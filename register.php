@@ -11,27 +11,38 @@
     <form action="register.php" method="POST">
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required>
+        
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+        
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" required>
+        <span>Already have an account? <a href="login.php">Login</a></span>
+        <br>
         <button type="submit">Register</button>
     </form>
+
     <?php
-    // include "db_connect.php";
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $username = $_POST['username'];
-        $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $username = $_POST['username'];
+    $email = $_POST['email'];
+    $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
 
-        $conn = new mysqli("localhost", "root", "", "user_auth");
-        if ($conn->connect_error) die("Connection failed: " . $conn->connect_error);
+    $conn = new mysqli("localhost", "root", "", "user_auth");
+    if ($conn->connect_error) die("Connection failed: " . $conn->connect_error);
 
-        $stmt = $conn->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
-        $stmt->bind_param("ss", $username, $password);
-        if ($stmt->execute()) echo "Registration successful.";
-        else echo "Error: " . $stmt->error;
+    $stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
+    $stmt->bind_param("sss", $username, $email, $password);
 
-        $stmt->close();
-        $conn->close();
+    if ($stmt->execute()) {
+        echo "<script>alert('Registration successful.');</script>";
+    } else {
+        echo "<script>alert('Error: " . $stmt->error . "');</script>";
     }
-    ?>
+
+    $stmt->close();
+    $conn->close();
+}
+?>
 </body>
 </html>
